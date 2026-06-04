@@ -31,12 +31,12 @@ with engine.begin() as conn:
 
     # ── Family Members ──────────────────────────────────────────
     conn.execute(text("""
-        INSERT INTO family_members (name, color, icloud_calendar_name, sort_order)
+        INSERT INTO family_members (name, color, icloud_calendar_name, sort_order, created_at)
         VALUES
-          ('Family',      '#6366f1', 'Family',   0),
-          ('Alex',        '#3b82f6', 'Alex',      1),
-          ('Sam',         '#ec4899', 'Sam',       2),
-          ('Mia',         '#f59e0b', 'Mia',       3)
+          ('Family',      '#6366f1', 'Family',   0, datetime('now')),
+          ('Alex',        '#3b82f6', 'Alex',      1, datetime('now')),
+          ('Sam',         '#ec4899', 'Sam',       2, datetime('now')),
+          ('Mia',         '#f59e0b', 'Mia',       3, datetime('now'))
     """))
 
     # Get IDs

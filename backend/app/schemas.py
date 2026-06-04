@@ -28,7 +28,8 @@ class FamilyMember(FamilyMemberBase):
     id: int
     calendar_url: Optional[str] = None
     reminders_list_url: Optional[str] = None
-    created_at: datetime.datetime
+    sort_order: int = 99
+    created_at: Optional[datetime.datetime] = None
 
     class Config:
         from_attributes = True
