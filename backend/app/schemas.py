@@ -141,8 +141,8 @@ class TrackerItemUpdate(BaseModel):
 
 class TrackerItem(TrackerItemBase):
     id: int
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
+    updated_at: Optional[datetime.datetime] = None
 
     class Config:
         from_attributes = True
@@ -163,7 +163,7 @@ class StoreUpdate(BaseModel):
 
 class Store(StoreBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -179,7 +179,7 @@ class DepartmentUpdate(BaseModel):
 
 class Department(DepartmentBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -219,8 +219,8 @@ class ShoppingItem(ShoppingItemBase):
     completed: bool = False
     store_name: Optional[str] = None
     department_name: Optional[str] = None
-    created_at: datetime.datetime
-    updated_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
+    updated_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -258,7 +258,7 @@ class Staple(StapleBase):
     id: int
     store_name: Optional[str] = None
     department_name: Optional[str] = None
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -296,7 +296,7 @@ class RecipeUpdate(BaseModel):
 
 class Recipe(RecipeBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -326,7 +326,7 @@ class MealUpdate(BaseModel):
 
 class Meal(MealBase):
     id:          int
-    created_at:  datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     recipe_name: Optional[str] = None
     class Config:
         from_attributes = True
@@ -351,7 +351,7 @@ class MealPlanUpdate(BaseModel):
 
 class MealPlan(MealPlanBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -365,7 +365,7 @@ class BudgetMonthCreate(BudgetMonthBase):
     copy_from: Optional[str] = None   # source YYYY-MM to copy income/expenses/debts from
 
 class BudgetMonth(BudgetMonthBase):
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -398,7 +398,7 @@ class BudgetIncomeUpdate(BaseModel):
 
 class BudgetIncome(BudgetIncomeBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -437,7 +437,7 @@ class BudgetExpenseUpdate(BaseModel):
 
 class BudgetExpense(BudgetExpenseBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -476,7 +476,7 @@ class BudgetDebtUpdate(BaseModel):
 
 class BudgetDebt(BudgetDebtBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -496,7 +496,7 @@ class SavingsTxCreate(SavingsTxBase):
 
 class SavingsTx(SavingsTxBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
@@ -516,7 +516,7 @@ class SavingsEnvelopeUpdate(BaseModel):
 
 class SavingsEnvelope(SavingsEnvelopeBase):
     id:           int
-    created_at:   datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     transactions: list[SavingsTx] = []
     balance:      float = 0.0
     class Config:
@@ -548,7 +548,7 @@ class AutoSavingsGoalUpdate(BaseModel):
 
 class AutoSavingsGoal(AutoSavingsGoalBase):
     id: int
-    created_at: datetime.datetime
+    created_at: Optional[datetime.datetime] = None
     class Config:
         from_attributes = True
 
