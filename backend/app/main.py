@@ -1,9 +1,11 @@
 import logging
 import os
+import traceback
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
@@ -47,6 +49,11 @@ app.include_router(meals.router,   prefix="/api/meals",   tags=["meals"])
 app.include_router(budget.router,  prefix="/api/budget",  tags=["budget"])
 app.include_router(shopping.router,  prefix="/api/shopping",  tags=["shopping"])
 app.include_router(routines.router,  prefix="/api/routines",  tags=["routines"])
+
+
+@app.exception_handler(Exception)
+async def debug_exception_handler(request: Request, exc: Exception):
+    return JSONResponse(status_code=500, content={"error": str(exc), "trace": traceback.format_exc()})
 
 
 @app.get("/api/health")
