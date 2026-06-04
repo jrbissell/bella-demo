@@ -6,7 +6,6 @@ import {
   ShoppingCartIcon,
   SparklesIcon,
   BanknotesIcon,
-  BugAntIcon,
   ClockIcon,
 } from '@heroicons/react/24/outline'
 import {
@@ -15,7 +14,6 @@ import {
   ClipboardDocumentListIcon as ChoresSolid,
   ShoppingCartIcon as ShoppingSolid,
   BanknotesIcon as BudgetSolid,
-  BugAntIcon as TrackerSolid,
   ClockIcon as ClockSolid,
 } from '@heroicons/react/24/solid'
 import { familyApi } from '../../api/family'
@@ -30,9 +28,7 @@ const mainNav = [
   { id: 'budget',    label: 'Budget',    icon: BanknotesIcon,             activeIcon: BudgetSolid },
 ]
 
-const bottomNav = [
-  { id: 'tracker', label: 'Tracker', icon: BugAntIcon, activeIcon: TrackerSolid },
-]
+const bottomNav = []
 
 function getInitials(name) {
   return name.split(' ').map(p => p[0]).join('').toUpperCase().slice(0, 2)

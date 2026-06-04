@@ -10,8 +10,6 @@ import CalendarPage from './pages/CalendarPage'
 import ChoresPage from './pages/ChoresPage'
 import MealsPage from './pages/MealsPage'
 import ShoppingPage from './pages/ShoppingPage'
-import TrackerPage from './pages/TrackerPage'
-
 const PAGES = {
   home:     HomePage,
   routines: RoutinesPage,
@@ -20,7 +18,6 @@ const PAGES = {
   chores:   ChoresPage,
   meals:    MealsPage,
   shopping: ShoppingPage,
-  tracker:  TrackerPage,
 }
 
 export default function App() {
