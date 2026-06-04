@@ -10,8 +10,12 @@ from sqlalchemy.orm import Session, joinedload
 from ..database import get_db
 from ..models import CalendarEvent, FamilyMember
 from ..schemas import CalendarEvent as CalendarEventSchema, EventCreate, EventUpdate, EventSplitRequest
-from ..services import caldav_service
-from ..services.sync_service import sync_all_calendars
+try:
+    from ..services import caldav_service
+    from ..services.sync_service import sync_all_calendars
+except Exception:
+    caldav_service = None
+    sync_all_calendars = lambda: {"message": "sync disabled"}
 from ..config import settings
 
 router = APIRouter()

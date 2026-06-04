@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from .database import create_tables
-from .routers import budget, calendar, chores, family, meals, routines, shopping, sync, tracker
+from .routers import budget, calendar, chores, family, meals, routines, shopping, tracker
 
 FRONTEND_DIST = Path(__file__).parent.parent.parent / "frontend" / "dist"
 
@@ -42,7 +42,6 @@ app.add_middleware(
 app.include_router(family.router, prefix="/api/family", tags=["family"])
 app.include_router(calendar.router, prefix="/api/calendar", tags=["calendar"])
 app.include_router(chores.router, prefix="/api/chores", tags=["chores"])
-app.include_router(sync.router, prefix="/api/sync", tags=["sync"])
 app.include_router(tracker.router, prefix="/api/tracker", tags=["tracker"])
 app.include_router(meals.router,   prefix="/api/meals",   tags=["meals"])
 app.include_router(budget.router,  prefix="/api/budget",  tags=["budget"])

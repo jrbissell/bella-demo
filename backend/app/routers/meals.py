@@ -5,7 +5,10 @@ import json
 import re
 from typing import Optional
 
-import anthropic
+try:
+    import anthropic
+except ImportError:
+    anthropic = None
 import httpx
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
