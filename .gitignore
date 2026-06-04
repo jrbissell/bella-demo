@@ -5,7 +5,7 @@ backend/.venv/
 
 # Frontend
 frontend/node_modules/
-frontend/dist/
+# frontend/dist/ — committed so HF Spaces Docker build can find it
 
 # Python
 __pycache__/
