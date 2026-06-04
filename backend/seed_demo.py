@@ -70,21 +70,21 @@ with engine.begin() as conn:
 
     # ── Chores ──────────────────────────────────────────────────
     chores = [
-        (alex_id, "Take out trash",      today,                       "FREQ=WEEKLY;BYDAY=MO"),
-        (alex_id, "Mow the lawn",        today + timedelta(days=5),  None),
-        (alex_id, "Grocery run",         today + timedelta(days=2),  None),
-        (sam_id,  "Vacuum living room",  today,                       "FREQ=WEEKLY;BYDAY=SA"),
-        (sam_id,  "Do laundry",          today + timedelta(days=1),  "FREQ=WEEKLY;BYDAY=TU"),
-        (sam_id,  "Meal prep",           today + timedelta(days=3),  None),
-        (mia_id,  "Clean bedroom",       today,                       "FREQ=WEEKLY;BYDAY=SU"),
+        (alex_id, "Take out trash",     today,                      "FREQ=WEEKLY;BYDAY=MO"),
+        (alex_id, "Mow the lawn",       today + timedelta(days=5),  None),
+        (alex_id, "Grocery run",        today + timedelta(days=2),  None),
+        (sam_id,  "Vacuum living room", today,                      "FREQ=WEEKLY;BYDAY=SA"),
+        (sam_id,  "Do laundry",         today + timedelta(days=1),  "FREQ=WEEKLY;BYDAY=TU"),
+        (sam_id,  "Meal prep",          today + timedelta(days=3),  None),
+        (mia_id,  "Clean bedroom",      today,                      "FREQ=WEEKLY;BYDAY=SU"),
         (mia_id,  "Unload dishwasher",  today + timedelta(days=1),  "FREQ=WEEKLY;BYDAY=MO,WE,FR"),
-        (mia_id,  "Feed the dog",        today,                       "FREQ=DAILY"),
-        (family_id,"Clean bathrooms",   today + timedelta(days=6),  "FREQ=WEEKLY;BYDAY=SA"),
+        (mia_id,  "Feed the dog",       today,                      "FREQ=DAILY"),
+        (family_id,"Clean bathrooms",  today + timedelta(days=6),  "FREQ=WEEKLY;BYDAY=SA"),
     ]
     for fid, title, due, rrule in chores:
         conn.execute(text("""
-            INSERT INTO chores (uid, family_member_id, title, due_date, completed, recurrence_rule)
-            VALUES (:uid, :fid, :title, :due, 0, :rrule)
+            INSERT INTO chores (uid, family_member_id, title, due_date, completed, priority, recurrence_rule)
+            VALUES (:uid, :fid, :title, :due, 0, 0, :rrule)
         """), {"uid": f"chore-{title.lower().replace(' ','-')}", "fid": fid,
                "title": title, "due": str(due), "rrule": rrule})
 
@@ -116,8 +116,8 @@ with engine.begin() as conn:
     ]
     for desc, dept_name, qty, unit in items:
         conn.execute(text("""
-            INSERT INTO shopping_items (description, store_id, department_id, quantity, unit, completed)
-            VALUES (:desc, :sid, :did, :qty, :unit, 0)
+            INSERT INTO shopping_items (description, store_id, department_id, quantity, unit, completed, taxable, tax_rate)
+            VALUES (:desc, :sid, :did, :qty, :unit, 0, 0, 8.25)
         """), {"desc": desc, "sid": store_id, "did": dept[dept_name], "qty": qty, "unit": unit})
 
     # ── Meals ────────────────────────────────────────────────────

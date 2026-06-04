@@ -83,7 +83,7 @@ class ChoreBase(BaseModel):
     title: str
     notes: Optional[str] = None
     due_date: Optional[datetime.datetime] = None
-    priority: int = 0             # 0=none 1=high 5=medium 9=low (iCal PRIORITY)
+    priority: Optional[int] = 0             # 0=none 1=high 5=medium 9=low (iCal PRIORITY)
     recurrence_rule: Optional[str] = None
     family_member_id: int
     chore_type: Optional[str] = None   # None=standard | honey_do
@@ -107,7 +107,7 @@ class ChoreUpdate(BaseModel):
 class Chore(ChoreBase):
     id: int
     uid: str
-    completed: bool = False
+    completed: Optional[bool] = False
     completed_at: Optional[datetime.datetime] = None
     last_synced: Optional[datetime.datetime] = None
     family_member_name: Optional[str] = None
@@ -124,7 +124,7 @@ class TrackerItemBase(BaseModel):
     title: str
     description: Optional[str] = None
     status: str = "open"         # open | in_progress | completed
-    priority: int = 0            # 0=none 1=high 5=medium 9=low
+    priority: Optional[int] = 0            # 0=none 1=high 5=medium 9=low
 
 
 class TrackerItemCreate(TrackerItemBase):
@@ -152,7 +152,7 @@ class TrackerItem(TrackerItemBase):
 
 class StoreBase(BaseModel):
     name: str
-    is_default: bool = False
+    is_default: Optional[bool] = False
 
 class StoreCreate(StoreBase):
     pass
@@ -193,8 +193,8 @@ class ShoppingItemBase(BaseModel):
     quantity: float = 1.0
     unit: str = "each"
     price_per_unit: Optional[float] = None
-    taxable: bool = False
-    tax_rate: float = 8.25
+    taxable: Optional[bool] = False
+    tax_rate: Optional[float] = 8.25
     notes: Optional[str] = None
 
 class ShoppingItemCreate(ShoppingItemBase):
@@ -216,7 +216,7 @@ class ShoppingItemUpdate(BaseModel):
 
 class ShoppingItem(ShoppingItemBase):
     id: int
-    completed: bool = False
+    completed: Optional[bool] = False
     store_name: Optional[str] = None
     department_name: Optional[str] = None
     created_at: Optional[datetime.datetime] = None
@@ -234,8 +234,8 @@ class StapleBase(BaseModel):
     quantity: float = 1.0
     unit: str = "each"
     price_per_unit: Optional[float] = None
-    taxable: bool = False
-    tax_rate: float = 8.25
+    taxable: Optional[bool] = False
+    tax_rate: Optional[float] = 8.25
     notes: Optional[str] = None
 
 class StapleCreate(StapleBase):
