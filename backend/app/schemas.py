@@ -378,8 +378,8 @@ class BudgetIncomeBase(BaseModel):
     pay_last_day:   bool            = False
     planned_amount: float           = 0.0
     actual_amount:  float           = 0.0
-    received:       bool            = False
-    one_time:       bool            = False
+    received: Optional[bool] = False
+    one_time: Optional[bool] = False
     sort_order:     int             = 0
 
 class BudgetIncomeCreate(BudgetIncomeBase):
@@ -411,10 +411,10 @@ class BudgetExpenseBase(BaseModel):
     due_last_day:      bool            = False
     planned_amount:    float           = 0.0
     actual_amount:     float           = 0.0
-    paid:              bool            = False
+    paid: Optional[bool] = False
     income_identifier: Optional[str]   = None
-    one_time:          bool            = False
-    autopay:           bool            = False
+    one_time: Optional[bool] = False
+    autopay: Optional[bool] = False
     payment_url:       Optional[str]   = None
     sort_order:        int             = 0
 
@@ -450,10 +450,10 @@ class BudgetDebtBase(BaseModel):
     minimum_payment:   float           = 0.0
     planned_amount:    float           = 0.0
     actual_amount:     float           = 0.0
-    paid:              bool            = False
+    paid: Optional[bool] = False
     income_identifier: Optional[str]   = None
-    one_time:          bool            = False
-    autopay:           bool            = False
+    one_time: Optional[bool] = False
+    autopay: Optional[bool] = False
     payment_url:       Optional[str]   = None
     sort_order:        int             = 0
 

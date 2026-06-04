@@ -88,6 +88,56 @@ with engine.begin() as conn:
         """), {"uid": f"chore-{title.lower().replace(' ','-')}", "fid": fid,
                "title": title, "due": str(due), "rrule": rrule})
 
+    # ── Routines ─────────────────────────────────────────────────
+    routines = [
+        (None,     "Family Morning",  "morning", 0),
+        (alex_id,  "Alex Evening",    "evening", 1),
+        (sam_id,   "Sam Evening",     "evening", 2),
+        (mia_id,   "Mia Morning",     "morning", 3),
+        (None,     "Daily Together",  "daily",   4),
+    ]
+    for fid, name, rtype, sort in routines:
+        conn.execute(text("""
+            INSERT INTO routines (family_member_id, name, routine_type, enabled, sort_order, created_at)
+            VALUES (:fid, :name, :type, 1, :sort, datetime('now'))
+        """), {"fid": fid, "name": name, "type": rtype, "sort": sort})
+
+    def get_routine_id(name):
+        return conn.execute(text("SELECT id FROM routines WHERE name=:n"), {"n": name}).scalar()
+
+    # Routine items: (routine_name, title, schedule, sort_order)
+    routine_items = [
+        # Family Morning
+        ("Family Morning", "Make beds",              "daily",   0),
+        ("Family Morning", "Eat breakfast together", "daily",   1),
+        ("Family Morning", "Pack lunches",           "1,2,3,4,5", 2),
+        ("Family Morning", "Check family calendar",  "daily",   3),
+        # Alex Evening
+        ("Alex Evening",   "Review tomorrow's schedule", "daily",    0),
+        ("Alex Evening",   "Pay any bills due",          "1",         1),
+        ("Alex Evening",   "10-min house tidy",          "daily",    2),
+        ("Alex Evening",   "Prep coffee maker",          "daily",    3),
+        # Sam Evening
+        ("Sam Evening",    "Plan tomorrow's meals",  "daily",   0),
+        ("Sam Evening",    "Lay out Mia's clothes",  "1,2,3,4", 1),
+        ("Sam Evening",    "Quick kitchen clean",    "daily",   2),
+        # Mia Morning
+        ("Mia Morning",    "Get dressed",            "daily",   0),
+        ("Mia Morning",    "Brush teeth",            "daily",   1),
+        ("Mia Morning",    "Pack backpack",          "1,2,3,4,5", 2),
+        ("Mia Morning",    "Feed the dog",           "daily",   3),
+        # Daily Together
+        ("Daily Together", "Family dinner",          "daily",   0),
+        ("Daily Together", "Device-free hour",       "daily",   1),
+        ("Daily Together", "Read / family time",     "daily",   2),
+    ]
+    for rname, title, schedule, sort in routine_items:
+        rid = get_routine_id(rname)
+        conn.execute(text("""
+            INSERT INTO routine_items (routine_id, title, schedule, sort_order, created_at)
+            VALUES (:rid, :title, :sched, :sort, datetime('now'))
+        """), {"rid": rid, "title": title, "sched": schedule, "sort": sort})
+
     # ── Shopping ─────────────────────────────────────────────────
     conn.execute(text("""
         INSERT INTO stores (name, is_default) VALUES ('Kroger', 1), ('Target', 0)
@@ -122,13 +172,20 @@ with engine.begin() as conn:
 
     # ── Meals ────────────────────────────────────────────────────
     meals_list = [
-        ("Spaghetti Bolognese", "dinner", "Classic pasta with meat sauce", 30),
-        ("Taco Tuesday",        "dinner", "Ground beef tacos with all the toppings", 20),
-        ("Grilled Chicken",     "dinner", "Lemon herb grilled chicken with veggies", 35),
-        ("Homemade Pizza",      "dinner", "Friday pizza night with favorite toppings", 45),
-        ("Stir Fry",            "dinner", "Quick veggie and chicken stir fry with rice", 25),
-        ("BBQ Burgers",         "dinner", "Weekend backyard burgers on the grill", 30),
-        ("Chicken Soup",        "dinner", "Homemade chicken noodle soup", 60),
+        ("Spaghetti Bolognese",    "dinner", "Classic pasta with meat sauce", 30),
+        ("Taco Tuesday",           "dinner", "Ground beef tacos with all the toppings", 20),
+        ("Grilled Chicken",        "dinner", "Lemon herb grilled chicken with veggies", 35),
+        ("Homemade Pizza",         "dinner", "Friday pizza night with favorite toppings", 45),
+        ("Veggie Stir Fry",        "dinner", "Quick veggie and tofu stir fry with rice", 25),
+        ("BBQ Burgers",            "dinner", "Weekend backyard burgers on the grill", 30),
+        ("Chicken Noodle Soup",    "dinner", "Homemade chicken noodle soup", 60),
+        ("Salmon & Roasted Veg",   "dinner", "Baked salmon with seasonal vegetables", 30),
+        ("Mac & Cheese",           "dinner", "Homemade baked mac and cheese — kid favorite", 40),
+        ("Sheet Pan Fajitas",      "dinner", "Chicken and peppers with tortillas", 25),
+        ("Beef Stew",              "dinner", "Slow cooker beef stew with potatoes and carrots", 20),
+        ("Pancake Breakfast",      "dinner", "Breakfast for dinner — pancakes, eggs, bacon", 20),
+        ("Chicken Tikka Masala",   "dinner", "Creamy tikka masala with basmati rice", 40),
+        ("BLT Sandwiches",         "dinner", "Quick BLT with tomato soup", 15),
     ]
     for name, cat, desc, prep in meals_list:
         conn.execute(text("""
@@ -151,51 +208,54 @@ with engine.begin() as conn:
 
     # Income
     income = [
-        ("A", "Alex Paycheck",  15, 0, 2900.00),
-        ("B", "Alex Paycheck",  30, 1, 2900.00),  # last of month
-        ("C", "Sam Paycheck",    1, 0, 1800.00),
-        ("D", "Sam Paycheck",   15, 0, 1800.00),
+        ("A", "Alex Paycheck",  15, 0, 2900.00, 2900.00, 1),
+        ("B", "Alex Paycheck",  30, 1, 2900.00, 0.00,    0),
+        ("C", "Sam Paycheck",    1, 0, 1800.00, 1800.00, 1),
+        ("D", "Sam Paycheck",   15, 0, 1800.00, 0.00,    0),
     ]
-    for i, (ident, name, pay_day, pay_last, planned) in enumerate(income):
+    for i, (ident, name, pay_day, pay_last, planned, actual, received) in enumerate(income):
         conn.execute(text("""
-            INSERT INTO budget_income (month_id, identifier, name, pay_day, pay_last_day, planned_amount, sort_order)
-            VALUES (:m, :id, :name, :pd, :pl, :amt, :so)
-        """), {"m": month_id, "id": ident, "name": name, "pd": pay_day,
-               "pl": pay_last, "amt": planned, "so": i})
+            INSERT INTO budget_income (month_id, identifier, name, pay_day, pay_last_day,
+                planned_amount, actual_amount, received, one_time, sort_order)
+            VALUES (:m, :id, :name, :pd, :pl, :amt, :act, :rcvd, 0, :so)
+        """), {"m": month_id, "id": ident, "name": name, "pd": pay_day, "pl": pay_last,
+               "amt": planned, "act": actual, "rcvd": received, "so": i})
 
     # Expenses
     expenses = [
-        ("needs", "Mortgage",        1,  0, 1650.00),
-        ("needs", "Electric",        10, 0,  130.00),
-        ("needs", "Water",           15, 0,   55.00),
-        ("needs", "Internet",        20, 0,   65.00),
-        ("needs", "Groceries",       0,  0,  500.00),
-        ("needs", "Car Insurance",   5,  0,  185.00),
-        ("needs", "Gas",             0,  0,  120.00),
-        ("needs", "Health Insurance",1,  0,  320.00),
-        ("wants", "Streaming (Netflix/Disney)", 12, 0, 35.00),
-        ("wants", "Gym Membership",  1,  0,  45.00),
-        ("wants", "Dining Out",      0,  0,  150.00),
-        ("wants", "Kids Activities", 0,  0,   80.00),
+        ("needs", "Mortgage",                  1,  0, 1650.00, 1650.00, 1, 1),
+        ("needs", "Electric",                  10, 0,  130.00,    0.00, 0, 0),
+        ("needs", "Water",                     15, 0,   55.00,    0.00, 0, 0),
+        ("needs", "Internet",                  20, 0,   65.00,   65.00, 1, 1),
+        ("needs", "Groceries",                  0, 0,  500.00,  210.00, 0, 0),
+        ("needs", "Car Insurance",              5, 0,  185.00,  185.00, 1, 1),
+        ("needs", "Gas",                        0, 0,  120.00,   48.00, 0, 0),
+        ("needs", "Health Insurance",           1, 0,  320.00,  320.00, 1, 1),
+        ("wants", "Streaming (Netflix/Disney)", 12, 0,  35.00,   35.00, 1, 1),
+        ("wants", "Gym Membership",             1, 0,   45.00,   45.00, 1, 1),
+        ("wants", "Dining Out",                 0, 0,  150.00,   62.00, 0, 0),
+        ("wants", "Kids Activities",            0, 0,   80.00,   40.00, 0, 0),
     ]
-    for i, (cat, name, due_day, due_last, planned) in enumerate(expenses):
+    for i, (cat, name, due_day, due_last, planned, actual, paid, autopay) in enumerate(expenses):
         conn.execute(text("""
-            INSERT INTO budget_expenses (month_id, category, name, due_day, due_last_day, planned_amount, sort_order)
-            VALUES (:m, :cat, :name, :dd, :dl, :amt, :so)
-        """), {"m": month_id, "cat": cat, "name": name, "dd": due_day,
-               "dl": due_last, "amt": planned, "so": i})
+            INSERT INTO budget_expenses (month_id, category, name, due_day, due_last_day,
+                planned_amount, actual_amount, paid, one_time, autopay, sort_order)
+            VALUES (:m, :cat, :name, :dd, :dl, :amt, :act, :paid, 0, :autopay, :so)
+        """), {"m": month_id, "cat": cat, "name": name, "dd": due_day, "dl": due_last,
+               "amt": planned, "act": actual, "paid": paid, "autopay": autopay, "so": i})
 
     # Debts
     debts = [
-        ("Car Loan",       5,  0, 285.00, 350.00),
-        ("Student Loan",   15, 0, 210.00, 250.00),
+        ("Car Loan",     5,  0, 285.00, 350.00, 350.00, 1),
+        ("Student Loan", 15, 0, 210.00, 250.00,   0.00, 0),
     ]
-    for i, (name, due_day, due_last, minimum, planned) in enumerate(debts):
+    for i, (name, due_day, due_last, minimum, planned, actual, paid) in enumerate(debts):
         conn.execute(text("""
-            INSERT INTO budget_debts (month_id, name, due_day, due_last_day, minimum_payment, planned_amount, sort_order)
-            VALUES (:m, :name, :dd, :dl, :min, :amt, :so)
+            INSERT INTO budget_debts (month_id, name, due_day, due_last_day,
+                minimum_payment, planned_amount, actual_amount, paid, one_time, autopay, sort_order)
+            VALUES (:m, :name, :dd, :dl, :min, :amt, :act, :paid, 0, 0, :so)
         """), {"m": month_id, "name": name, "dd": due_day, "dl": due_last,
-               "min": minimum, "amt": planned, "so": i})
+               "min": minimum, "amt": planned, "act": actual, "paid": paid, "so": i})
 
     # Savings envelopes
     envelopes = [
@@ -220,4 +280,5 @@ with engine.begin() as conn:
 print(f"✓ Demo database created at {DB_PATH}")
 print("  Family: Alex, Sam, Mia (+ Family group)")
 print("  11 calendar events · 10 chores · 11 shopping items")
-print("  7 meals planned · Budget set up for", month_id)
+print("  14 meals · 7 planned · 5 routines with 18 tasks")
+print("  Budget set up for", month_id, "· 4 income · 12 expenses · 2 debts · 5 savings envelopes")
