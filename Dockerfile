@@ -11,5 +11,5 @@ COPY frontend/dist/ ./frontend/dist/
 # Seed the demo database on build
 RUN cd backend && python seed_demo.py
 
-EXPOSE 8000
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+EXPOSE 7860
+CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "7860"]
