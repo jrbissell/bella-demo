@@ -1,0 +1,18 @@
+# NEVER commit these — real credentials and personal data
+backend/.env
+backend/bella.db
+backend/.venv/
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Misc
+.DS_Store
+*.log
